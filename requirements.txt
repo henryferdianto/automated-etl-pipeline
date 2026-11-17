@@ -1,4 +1,3 @@
-httpx
 pandas
-sqlalchemy
-psycopg2-binary
+pytest
+# optional: httpx, sqlalchemy, psycopg2-binary

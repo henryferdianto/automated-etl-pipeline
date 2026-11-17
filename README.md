@@ -1,5 +1,7 @@
 # End-to-End Automated ETL Data Pipeline & Live BI Reporting
 
+![ci](https://github.com/henryferdianto/automated-etl-pipeline/actions/workflows/ci.yml/badge.svg)
+
 > **Scheduled API ingestion, validation, warehouse load and zero-touch dashboards**
 
 ## Overview
@@ -46,12 +48,32 @@ cp .env.example .env   # set DATABASE_URL
 python -m etl.pipeline
 ```
 
+
+<!-- completed -->
+
+## Quickstart with Sample Data
+
+The repository ships a synthetic data generator so the full pipeline can be run
+without any private dataset:
+
+```bash
+make sample && python -m etl.pipeline
+python -m etl.run_demo
+```
+
+## Tests
+
+```bash
+pip install -r requirements.txt
+pytest -q
+```
+
 ## Project Status
 
-This repository contains the project documentation and a runnable implementation
-skeleton. Scripts are structured so that each pipeline stage can be executed and
-extended independently. Update the configuration and data paths to run against
-your own datasets.
+This repository contains the project documentation and a runnable reference
+implementation. A synthetic data generator is included so every pipeline stage
+can be executed end-to-end; replace the sample data with your own datasets in
+`data/raw/` to reproduce real results.
 
 ## License
 

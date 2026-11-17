@@ -1,16 +1,25 @@
-"""Load a dataframe into a SQL warehouse (upsert on primary key)."""
+"""Load a dataframe into a SQL warehouse (SQLite by default)."""
 import os
-from sqlalchemy import create_engine, text
+import sqlite3
+
 import pandas as pd
 
 
-def load(df: pd.DataFrame, table: str = "api_records") -> int:
-    engine = create_engine(os.environ["DATABASE_URL"])
-    with engine.begin() as conn:
-        conn.execute(text(f"""
-            CREATE TABLE IF NOT EXISTS {table} (
-                id TEXT PRIMARY KEY
-            )
-        """))
-    df.to_sql(table, engine, if_exists="append", index=False, method="multi")
+def _sqlite_path(database_url: str) -> str:
+    if database_url.startswith("sqlite:///"):
+        return database_url.replace("sqlite:///", "", 1)
+    return database_url
+
+
+def load(df: pd.DataFrame, table: str = "api_records", database_url: str | None = None) -> int:
+    database_url = database_url or os.environ.get("DATABASE_URL", "sqlite:///data/warehouse.db")
+    path = _sqlite_path(database_url)
+    import pathlib
+
+    pathlib.Path(path).parent.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(path)
+    try:
+        df.to_sql(table, con, if_exists="replace", index=False)
+    finally:
+        con.close()
     return len(df)
